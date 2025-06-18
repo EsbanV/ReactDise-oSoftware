@@ -32,7 +32,5 @@ class Categoria(db.Model):
             "nombre": self.nombre,
             "tipo": self.tipo.value if hasattr(self.tipo, "value") else self.tipo,  # Devuelve "ingreso" o "gasto"
             "cuenta_id": self.cuenta_id,
-            # Si quieres agregar presupuesto, solo agrega si está cargado:
             "presupuesto": self.presupuesto.monto_asignado if self.presupuesto else None,
-            # No incluimos relaciones completas para evitar recursión/ciclos
         }

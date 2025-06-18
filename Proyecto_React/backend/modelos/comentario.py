@@ -27,6 +27,5 @@ class Comentario(db.Model):
             "fecha_creacion": self.fecha_creacion.isoformat() if self.fecha_creacion else None,
             "usuario_id": self.usuario_id,
             "publicacion_id": self.publicacion_id,
-            # Si quieres exponer nombre de usuario (solo si la relación está cargada):
             "usuario_nombre": self.usuario.nombre if self.usuario else None,
         }

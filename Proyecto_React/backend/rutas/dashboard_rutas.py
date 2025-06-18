@@ -24,9 +24,12 @@ def dashboard():
     if not cuenta_id:
         cuenta = current_app.cuenta_bancaria_facade.obtener_primer_cuenta(usuario_id)
         cuenta_id = cuenta.id if cuenta else None
+    else:
+        cuenta = current_app.cuenta_bancaria_facade.obtener_cuenta_por_id(cuenta_id)
 
-    if cuenta_id:
+    if cuenta_id and cuenta:
         resumen = current_app.usuario_facade.obtener_resumen(usuario_id, cuenta_id)
+
         # Gráficos
         if year is not None and month is not None and day is not None:
             datos_grafico = current_app.grafico_facade.obtener_datos_crudos_por_dia(cuenta_id, year, month, day)
@@ -50,41 +53,24 @@ def dashboard():
         grafico_gastos_categoria = []
         grafico_ingresos_categoria = []
 
-    # PRINTS DE DEBUG (agrega estos para saber qué tipo de datos tienes)
-    print('--- DEBUG DASHBOARD ---')
-    print('Resumen:', resumen)
-    if 'categorias' in resumen:
-        for i, cat in enumerate(resumen['categorias']):
-            print(f"categorias[{i}]: type={type(cat)}, value={cat}")
-            if hasattr(cat, 'tipo'):
-                print(f"   tipo={cat.tipo}, type={type(cat.tipo)}")
-            if isinstance(cat, dict):
-                print(f"   dict tipo={cat.get('tipo')}, type={type(cat.get('tipo'))}")
-
-    print('Datos gráfico gastos categoría:', grafico_gastos_categoria)
-    for i, dato in enumerate(grafico_gastos_categoria):
-        print(f"gastos_categoria[{i}]: type={type(dato)}, value={dato}")
-
-    print('Datos gráfico ingresos categoría:', grafico_ingresos_categoria)
-    for i, dato in enumerate(grafico_ingresos_categoria):
-        print(f"ingresos_categoria[{i}]: type={type(dato)}, value={dato}")
-
-    # Serialización (ajusta según tus modelos)
+    # --- SERIALIZACIÓN DE TODOS LOS OBJETOS ---
     def serialize_usuario(usuario):
-        return {
+        return usuario.to_dict() if hasattr(usuario, "to_dict") else {
             'id': usuario.id,
             'nombre': usuario.nombre,
-            'correo': usuario.correo,
-            # agrega otros campos si los necesitas
+            'correo': getattr(usuario, 'correo', None),
         }
-    
+
     resumen_dict = {
-        'cuentas': [c.to_dict() for c in resumen.get('cuentas', [])],
-        'cuenta': resumen['cuenta'].to_dict() if resumen.get('cuenta') else None,
+        'cuentas': [c.to_dict() for c in resumen.get('cuentas', []) if c],
+        'cuenta': resumen['cuenta'].to_dict() if resumen.get('cuenta') and hasattr(resumen['cuenta'], 'to_dict') else None,
         'categorias': [
             {
                 'categoria': cat['categoria'].to_dict() if hasattr(cat['categoria'], 'to_dict') else cat['categoria'],
-                'transacciones': cat.get('transacciones', [])
+                'transacciones': [
+                    t.to_dict() if hasattr(t, 'to_dict') else t
+                    for t in cat.get('transacciones', [])
+                ]
             }
             for cat in resumen.get('categorias', [])
         ],
@@ -100,7 +86,11 @@ def dashboard():
         'datos_grafico_categoria_ingreso': grafico_ingresos_categoria,
         'resumen': resumen_dict,
         'notificaciones': [
-            {'id': n.id, 'mensaje': n.mensaje, 'leido': n.leido}
+            n.to_dict() if hasattr(n, 'to_dict') else {
+                'id': n.id,
+                'mensaje': getattr(n, 'mensaje', ''),
+                'leido': getattr(n, 'leido', False)
+            }
             for n in notificaciones
         ]
     })

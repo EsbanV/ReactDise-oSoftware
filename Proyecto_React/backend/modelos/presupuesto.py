@@ -18,6 +18,4 @@ class Presupuesto(db.Model):
             "monto_asignado": self.monto_asignado,
             "monto_gastado": self.monto_gastado,
             "categoria_id": self.categoria_id,
-            # Puedes agregar información de la categoría si tienes la relación cargada:
-            # "categoria_nombre": self.categoria.nombre if self.categoria else None,
         }

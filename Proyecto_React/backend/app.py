@@ -13,6 +13,7 @@ from servicios.notificacion_servicio import NotificacionService
 from servicios.grafico_servicio import GraficoServicio
 from servicios.publicacion_servicio import PublicacionService
 from servicios.transaccion_base_datos import TransaccionRepositorio
+from servicios.publicacion_base_datos import PublicacionRepositorio
 from servicios.exportacion_servicio import ExportacionServicio
 from observers.observer import NotificationObserver
 from configuracion.configuracion import db
@@ -34,7 +35,8 @@ def create_app():
     )
     repositorio = ServicioBaseDatos(db.session)
     transaccion_repositorio = TransaccionRepositorio(db.session)
-    
+    publicacion_repositorio = PublicacionRepositorio(db.session)
+
     observer = NotificationObserver(repositorio)
     presupuesto_servicio = PresupuestoServicio(repositorio)
     categoria_servicio = CategoriaServicio(repositorio, presupuesto_servicio)
@@ -43,8 +45,7 @@ def create_app():
     usuario_servicio = UsuarioServicio(transaccion_repositorio, cuenta_bancaria_servicio, categoria_servicio, transaccion_servicio)
 
     autor_servicio = AutorService(repositorio, usuario_servicio, confirmation_observers = [observer], author_observers = [observer])
-
-    publicacion_servicio = PublicacionService(repositorio, usuario_servicio, comment_observers = [observer], publication_observers = [observer])
+    publicacion_servicio = PublicacionService(repositorio, publicacion_repositorio, usuario_servicio, comment_observers = [observer], publication_observers = [observer])
 
     grafico_servicio = GraficoServicio(repositorio)
     notificacion_servicio = NotificacionService(repositorio)

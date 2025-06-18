@@ -20,6 +20,4 @@ class CuentaBancaria(db.Model):
             "nombre": self.nombre,
             "saldo": self.saldo,
             "usuario_id": self.usuario_id,
-            # Si quieres, podrías incluir los nombres de las categorías asociadas:
-            # "categorias": [cat.to_dict() for cat in self.categorias]  # Solo si necesitas el detalle
         }

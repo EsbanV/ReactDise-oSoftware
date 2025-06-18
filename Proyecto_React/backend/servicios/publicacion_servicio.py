@@ -12,8 +12,9 @@ LIMITE_CARACTERES_PUBLICACION = 500
 LIMITE_CARACTERES_TITULO = 100
 class PublicacionService:
 
-    def __init__(self, repositorio, usuario_servicio,comment_observers=None, publication_observers=None):
+    def __init__(self, repositorio, publicacion_repositorio, usuario_servicio,comment_observers=None, publication_observers=None):
         self.repositorio = repositorio
+        self.publicacion_repositorio = publicacion_repositorio
         self.usuario_servicio = usuario_servicio
         self.comment_observers = comment_observers or []
         self.publication_observers = publication_observers or []
@@ -47,8 +48,9 @@ class PublicacionService:
         return publicacion
     
     
-    def obtener_publicaciones(self):
-        return self.repositorio.obtener_todos(Publicacion)
+    def obtener_publicaciones(self, limit, offset):
+        return self.publicacion_repositorio.obtener_publicaciones(limit, offset)
+
 
     
     def agregar_comentario(self, publicacion_id: int, usuario_id: int, contenido: str):

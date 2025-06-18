@@ -25,5 +25,4 @@ class Notificacion(db.Model):
             "leida": self.leida,
             "fecha_creacion": self.fecha_creacion.isoformat() if self.fecha_creacion else None,
             "usuario_id": self.usuario_id,
-            # Puedes agregar más si necesitas (como el nombre de usuario), pero normalmente no es necesario aquí
         }

@@ -177,8 +177,8 @@ class ComunidadFacade:
     def obtener_publicacion(self, publicacion_id: int):
         return self.publicacion_servicio.obtener_publicacion_o_404(publicacion_id)
 
-    def obtener_publicaciones(self):
-        return self.publicacion_servicio.obtener_publicaciones()
+    def obtener_publicaciones(self, limit, offset):
+        return self.publicacion_servicio.obtener_publicaciones(limit, offset)
 
     def agregar_comentario(self, publicacion_id, usuario_id, contenido):
         print("[FACHADA] agregar_comentario llamado")
